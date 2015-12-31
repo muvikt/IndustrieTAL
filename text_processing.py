@@ -54,6 +54,7 @@ def filter_email(src):
 def anonymize_header(email_header):
 	""" (list of str tuple) --> list of str tuple
 	"""
+	return_file = open("retour.txt","w")
 	dico_mapping = {}
 	patterns = { 'From' : str, 'To' : str, 'Subject' : str}
 	for item in email_header:
@@ -70,7 +71,7 @@ def anonymize_header(email_header):
 				if item not in dico_mapping:
 					dico_mapping[item] = 'adresse'+str(i)+ "@got.com"
 		if str(p) == 'Subject':
-			print patterns[p]
+			pass
 			
 		
 
