@@ -42,11 +42,8 @@ def main():
 	contentFile = open("mail.txt",'r').read()
 	header_email,body_email = filter_email(contentFile)
 	anonymize_header(header_email)
- 	#tokenized_body = tokenize(body_email)
- 	#print tokenized_content
- 	#tagged_body = tag(tokenized_body)
- 	#print tagged_content
- 	#get_EN_body = get_EN(tagged_body)
+	anonymize_body(body_email)
+ 	
 
  	
 

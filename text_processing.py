@@ -26,6 +26,7 @@ def get_header_email(src):
 	"""
 	parser = HeaderParser()
 	h = parser.parsestr(src)
+	print h.items()
 	return h.items()
 
 
@@ -54,6 +55,7 @@ def filter_email(src):
 def anonymize_header(email_header):
 	""" (list of str tuple) --> list of str tuple
 	"""
+	print email_header
 	dico_mapping = {}
 	patterns = { 'From' : str, 'To' : str, 'Subject' : str}
 	for item in email_header:
@@ -77,9 +79,13 @@ def anonymize_header(email_header):
 
 #anonymize the email body
 def anonymize_body(email_body):
-	"""
-	"""
-	pass
+	print email_body	
+	tokenized_body = tokenize(email_body)
+ 	print tokenized_body
+ 	tagged_body = tag(tokenized_body)
+ 	print tagged_body
+ 	get_EN_body = get_EN(tagged_body)
+ 	print get_EN_body
 
 
 
