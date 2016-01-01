@@ -28,6 +28,7 @@ def listSubDirs(rootd):
 		  subdirs.append(orgd)
 	return subdirs
 
+
 def listFiles(subdirs):
   files=[]
   for subd in subdirs:
@@ -42,7 +43,7 @@ def main():
 	contentFile = open("mail.txt",'r').read()
 	header_email,body_email = filter_email(contentFile)
 	anonymize_header(header_email)
-	print anonymize_body(body_email)
+	print anonymize_header(header_email)
 
  	
 
