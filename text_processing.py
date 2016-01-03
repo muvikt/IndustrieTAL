@@ -67,13 +67,13 @@ def anonymize_header(email_header):
 	# transformer le tuple(renvoye par le parseur d'email) en str 
 	for item in email_header:
 		line_email = str(item).replace("(",'').replace(")",'').replace('\'','').replace("\\n\\",'')
-		to_write_line = set_anonymized_line(line_email, mapping_dict)
+		to_write_line = get_anonymized_line(line_email, mapping_dict)
 		return_file.write(to_write_line+"\n")
 	return  "results en retour.txt"
 				
 			
 		
-def set_anonymized_line(line_email, mapping_dict):
+def get_anonymized_line(line_email, mapping_dict):
 	"""
 	"""
 	return_line = ""
@@ -96,7 +96,6 @@ def fill_mapping_dict(patterns_header):
 	for p in patterns_header:
 		if str(p) == 'From' or str(p) == 'To':
 			for item in patterns_header[p]:
-				print item
 				if item not in dico_mapping:
 					i+=1
 					dico_mapping[item] = 'adresse'+ str(i)+"@got.com"
@@ -119,10 +118,9 @@ def fill_patternsDico_header(email_header):
 				match_string = line_email.replace(pattern+", ","")
 				# si plusieurs valeurs, on a besoin de decouper au niveau de la virgule
 				vals = match_string.split(",")
-				
+				print vals
 				if len(vals) >= 2:
 					for val in vals:
-						
 						if val not in patterns[pattern]:
 							patterns[pattern].append(val)
 				else:
