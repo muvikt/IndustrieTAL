@@ -25,9 +25,6 @@ from nltk.chunk.regexp import RegexpChunkParser, RegexpParser
 from email.parser import HeaderParser
 from nltk.tree import *
 
-""" description program: 
-"""
-
 
 
 # get the email header 
@@ -39,7 +36,6 @@ def get_header_email(src):
 	return h.items()
 
 
-
 # get the email body text
 def get_body_mail(src):
 	""" (str) --> str
@@ -49,7 +45,6 @@ def get_body_mail(src):
 	return body_email
 
 
-
 # split the email intp header and body
 def filter_email(src):
 	""" (src) --> list of str tuple, str
@@ -57,84 +52,54 @@ def filter_email(src):
 	return get_header_email(src),get_body_mail(src)
 
 
-
 # anonymize the email adresses (from & to)
 def anonymize_header(email_header):
-	""" (list of str tuple) --> list of str tuple
+	""" (list of str tuple) --> str
 	"""
-	return_file = open("retour.txt","w")
-	# dict  patterns :  patterns values 
-	patterns_header = fill_patternsDico_header(email_header)
-	# mapping to, from adresses to anonymized adresses 
-	mapping_dict = fill_mapping_dict(patterns_header)
-	# transformer le tuple(renvoye par le parseur d'email) en str 
-	for item in email_header:
-		line_email = str(item).replace("(",'').replace(")",'').replace('\'','').replace("\\n\\",'')
-		to_write_line = get_anonymized_line(line_email, mapping_dict)
-		return_file.write(to_write_line+"\n")
-	return  "results en retour.txt"
-				
-			
-		
-def get_anonymized_line(line_email, mapping_dict):
-	"""
-	"""
-	return_line = ""
-	for item in  line_email.replace(",","").split():
-			if item in mapping_dict:
-				#print item, mapping_dict[item]
-				return_line += " "+mapping_dict[item]
-			else:
-				return_line += " "+item
-	return return_line 
+	regex_mail_adress = r'\w+\.?\w+@\w+\.[A-za-z]{2,3}'
 
+	# transform the  str tuple into str
+	string = ""
+	for tpl in email_header:
+		string+= tpl[0]+" "+tpl[1]+"\n"
+	all_adress_matches = re.findall(regex_mail_adress, string)
 
-# fills the mapping dict, from adresses to anonymize to anonymized adresses
-def fill_mapping_dict(patterns_header):
-	""" (dict) --> dict
-	"""
-
-	dico_mapping = {}
-	i = 0
-	for p in patterns_header:
-		if str(p) == 'From' or str(p) == 'To':
-			for item in patterns_header[p]:
-				if item not in dico_mapping:
-					i+=1
-					dico_mapping[item] = 'adresse'+ str(i)+"@got.com"
-				else:
-					continue
-	return dico_mapping
+	# fill mapping dict
+	adresses_map = fill_mapping(all_adress_matches)
 	
+	# get anonymized text
+	anonymized_string = get_anonymized_mail(string, adresses_map) 
 
-# fill the patterns dict : from pattern to pattern value
-def fill_patternsDico_header(email_header):
-	""" (str) --> dico 
+	return anonymized_string
+
+# produce anonymized text
+def get_anonymized_mail(string, adresses_map):
+	""" (str,dict) --> str
 	"""
-	patterns = { 'From' : [], 'To' : [], 'Subject' : []}
-	for item in email_header:
-		line_email = str(item).replace("(",'').replace(")",'').replace('\'','').replace("\\n\\",'')
-		for pattern in patterns:
-			if re.match(pattern, line_email):
-				# ici on recupere la deuxieme partie de la ligne lue
-				# exemple: From, amy.chandler@enron.com, on recupere juste amy.chandler@enron.com
-				match_string = line_email.replace(pattern+", ","")
-				# si plusieurs valeurs, on a besoin de decouper au niveau de la virgule
-				vals = match_string.split(",")
-				print vals
-				if len(vals) >= 2:
-					for val in vals:
-						if val not in patterns[pattern]:
-							patterns[pattern].append(val)
-				else:
-					patterns[pattern] = vals	
-	return patterns	
+	string_to_return = ""
+	new_line = ""
+	for line in string.split("\n"):
+		for address in adresses_map :
+			if address in line:
+				new_line = line.replace(address, adresses_map[address])
+				string_to_return += new_line +"\n"
+	return string_to_return
 
 
+# fills the mapping dict address_to_anonymize : anomynized_address 		
+def fill_mapping(adresses_lst):
+	""" (lst of str) --> dict
+	"""
+	adresses_mapping = {}
+	i = 0
+	for adress in adresses_lst:
+		if adress not in adresses_mapping:
+			i+=1
+			adresses_mapping[adress] =  "adress_"+ str(i)+ "@got.com"
+	return adresses_mapping
 
 
-
-#anonymize the email body
+# anonymize the email body
 def anonymize_body(email_body):
 	new=re.sub(r"[0-9]", "*", email_body) #anonymize numbers
 	#print "EMAIL \n", new	
@@ -149,8 +114,7 @@ def anonymize_body(email_body):
 	return new
 
 
-
-#return dictionary of NE {NE:type_NE}
+# return dictionary of NE {NE:type_NE}
 def treeNLTK2Dic(nltkTree):
   en2label={}
   for el in nltkTree:
@@ -160,7 +124,6 @@ def treeNLTK2Dic(nltkTree):
   return en2label
 
 
-
 def anonymizeEN(dicEN):
   en2anonym={}
   i=1
@@ -168,7 +131,6 @@ def anonymizeEN(dicEN):
     anon="_"+dicEN[en][:3]+str(i)
     en2anonym[en]=anon
     i+=1
-    
   return en2anonym
 
 
@@ -178,7 +140,6 @@ def remove_PUNCT(tokens):
 	"""
 	no_punct = [w for w in tokens if w.isalnum()]
 	return no_punct
-
 
 
 # return tokenized string
@@ -192,7 +153,6 @@ def tokenize(contentFile):
 	return no_punct_tokens
 
 
-
 # return tagged string
 def tag(tokenized_content):
 	""" (str) --> str
@@ -200,7 +160,6 @@ def tag(tokenized_content):
 	#print "Tagging ..."
 	tagged = nltk.pos_tag(tokenized_content)
 	return tagged
-
 
 
 #return a list of tuples(name_entity, str)
