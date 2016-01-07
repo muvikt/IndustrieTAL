@@ -23,7 +23,7 @@ from nltk.chunk.util import (ChunkScore, accuracy, tagstr2tree, conllstr2tree,
                              ieerstr2tree)
 from nltk.chunk.regexp import RegexpChunkParser, RegexpParser
 from email.parser import HeaderParser
-
+from nltk.tree import *
 
 """ description program: 
 """
@@ -36,7 +36,6 @@ def get_header_email(src):
 	"""
 	parser = HeaderParser()
 	h = parser.parsestr(src)
-	print h.items()
 	return h.items()
 
 
@@ -61,15 +60,75 @@ def filter_email(src):
 
 # anonymize the email adresses (from & to)
 def anonymize_header(email_header):
-	""" (list of str tuple) --> str
+	""" (list of str tuple) --> list of str tuple
 	"""
-	
-	for tp in email_header:
+	return_file = open("retour.txt","w")
+	# dict  patterns :  patterns values 
+	patterns_header = fill_patternsDico_header(email_header)
+	# mapping to, from adresses to anonymized adresses 
+	mapping_dict = fill_mapping_dict(patterns_header)
+	# transformer le tuple(renvoye par le parseur d'email) en str 
+	for item in email_header:
+		line_email = str(item).replace("(",'').replace(")",'').replace('\'','').replace("\\n\\",'')
+		to_write_line = get_anonymized_line(line_email, mapping_dict)
+		return_file.write(to_write_line+"\n")
+	return  "results en retour.txt"
+				
+			
 		
+def get_anonymized_line(line_email, mapping_dict):
+	"""
+	"""
+	return_line = ""
+	for item in  line_email.replace(",","").split():
+			if item in mapping_dict:
+				#print item, mapping_dict[item]
+				return_line += " "+mapping_dict[item]
+			else:
+				return_line += " "+item
+	return return_line 
 
 
+# fills the mapping dict, from adresses to anonymize to anonymized adresses
+def fill_mapping_dict(patterns_header):
+	""" (dict) --> dict
+	"""
 
+	dico_mapping = {}
+	i = 0
+	for p in patterns_header:
+		if str(p) == 'From' or str(p) == 'To':
+			for item in patterns_header[p]:
+				if item not in dico_mapping:
+					i+=1
+					dico_mapping[item] = 'adresse'+ str(i)+"@got.com"
+				else:
+					continue
+	return dico_mapping
+	
 
+# fill the patterns dict : from pattern to pattern value
+def fill_patternsDico_header(email_header):
+	""" (str) --> dico 
+	"""
+	patterns = { 'From' : [], 'To' : [], 'Subject' : []}
+	for item in email_header:
+		line_email = str(item).replace("(",'').replace(")",'').replace('\'','').replace("\\n\\",'')
+		for pattern in patterns:
+			if re.match(pattern, line_email):
+				# ici on recupere la deuxieme partie de la ligne lue
+				# exemple: From, amy.chandler@enron.com, on recupere juste amy.chandler@enron.com
+				match_string = line_email.replace(pattern+", ","")
+				# si plusieurs valeurs, on a besoin de decouper au niveau de la virgule
+				vals = match_string.split(",")
+				print vals
+				if len(vals) >= 2:
+					for val in vals:
+						if val not in patterns[pattern]:
+							patterns[pattern].append(val)
+				else:
+					patterns[pattern] = vals	
+	return patterns	
 
 
 
@@ -77,8 +136,40 @@ def anonymize_header(email_header):
 
 #anonymize the email body
 def anonymize_body(email_body):
-	pass
+	new=re.sub(r"[0-9]", "*", email_body) #anonymize numbers
+	#print "EMAIL \n", new	
+	#tokenized_body = 
+	##print re.findall(regexs[0],email_body)
+ 	##print tokenized_body
+ 	#tagged_body = 
+ 	en2label = treeNLTK2Dic(get_EN(tag(tokenize(email_body))))
+ 	en_anonym=anonymizeEN(en2label)
+ 	for en in en_anonym:
+	  new=re.sub(en, en_anonym[en],new)
+	return new
 
+
+
+#return dictionary of NE {NE:type_NE}
+def treeNLTK2Dic(nltkTree):
+  en2label={}
+  for el in nltkTree:
+    if isinstance (el, Tree):
+      en="".join(x+' ' for x, y in el).strip(" ")
+      en2label[en]=el.label()
+  return en2label
+
+
+
+def anonymizeEN(dicEN):
+  en2anonym={}
+  i=1
+  for en in dicEN:
+    anon="_"+dicEN[en][:3]+str(i)
+    en2anonym[en]=anon
+    i+=1
+    
+  return en2anonym
 
 
 #return a string without punctuation
@@ -94,7 +185,7 @@ def remove_PUNCT(tokens):
 def tokenize(contentFile):
 	""" (str) --> str
 	"""
-	print "Tokenize ..."
+	#print "Tokenize ..."
 	#remove punctuation
 	tokens = nltk.word_tokenize(contentFile)
 	no_punct_tokens = remove_PUNCT(tokens)
@@ -106,7 +197,7 @@ def tokenize(contentFile):
 def tag(tokenized_content):
 	""" (str) --> str
 	"""
-	print "Tagging ..."
+	#print "Tagging ..."
 	tagged = nltk.pos_tag(tokenized_content)
 	return tagged
 
@@ -116,9 +207,9 @@ def tag(tokenized_content):
 def get_EN(tagged_content):
 	""" (str) --> list of str
 	"""
-	print "Names entity recognition..."
+	#print "Names entity recognition..."
 	lst_EN = list()
-	for item in nltk.ne_chunk(tagged_content, binary=True):
+	for item in nltk.ne_chunk(tagged_content):
 		lst_EN.append(item)
 	return lst_EN 	
 
