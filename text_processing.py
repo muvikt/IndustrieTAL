@@ -136,7 +136,7 @@ def anonymize_body(email_body):
 	new=re.sub(r"[0-9]", "*", email_body) #anonymize numbers
 	#print "EMAIL \n", new	
 	#tokenized_body = 
-	##print re.findall(regexs[0],email_body)
+	##ooooooooooooo re.findall(regexs[0],email_body)
  	##print tokenized_body
  	#tagged_body = 
  	en2label = treeNLTK2Dic(get_EN(tag(tokenize(email_body))))
@@ -158,6 +158,8 @@ def anonymizeEN(dicEN):
   en2anonym={}
   i=1
   for en in dicEN:
+    if "GPE" in dicEN[en]:
+      print 
     anon="_"+dicEN[en][:3]+str(i)
     en2anonym[en]=anon
     i+=1
