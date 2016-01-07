@@ -36,6 +36,7 @@ def get_header_email(src):
 	"""
 	parser = HeaderParser()
 	h = parser.parsestr(src)
+	print h.items()
 	return h.items()
 
 
@@ -130,10 +131,11 @@ def fill_patternsDico_header(email_header):
 
 #anonymize the email body
 def anonymize_body(email_body):
-	"""
-	"""
+	print email_body	
 	tokenized_body = tokenize(email_body)
+ 	print tokenized_body
  	tagged_body = tag(tokenized_body)
+ 	print tagged_body
  	get_EN_body = get_EN(tagged_body)
  	print get_EN_body
 

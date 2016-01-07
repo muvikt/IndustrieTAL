@@ -43,6 +43,7 @@ def main():
 	contentFile = open("mail.txt",'r').read()
 	header_email,body_email = filter_email(contentFile)
 	anonymize_header(header_email)
+	#anonymize_body(body_email)
 	print anonymize_header(header_email)
 
  	
