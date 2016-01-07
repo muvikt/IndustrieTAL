@@ -16,6 +16,8 @@ from os.path import isfile, join
 from text_processing import *
 
 
+
+
 # List all the subdirs of rootd
 # returns a list of string
 def listSubDirs(rootd):
@@ -29,6 +31,7 @@ def listSubDirs(rootd):
 	return subdirs
 
 
+#List files
 def listFiles(directory):
   subdirs=listSubDirs(directory)
   files=[]
@@ -39,24 +42,15 @@ def listFiles(directory):
   return files
 
 
-<<<<<<< HEAD
-def main():
-	#print listSubDirs('scott-s')
-	contentFile = open("mail.txt",'r').read()
-	header_email,body_email = filter_email(contentFile)
-	anonymize_header(header_email)
-	#anonymize_body(body_email)
-	print anonymize_header(header_email)
-=======
 def anonymize(directory):
 	files=listFiles(directory)
 	i=0
 	lim=10
-	print "Total:", len(files), u" fichiers sont à anonymiser"
+	print "Total:", len(files), u"fichiers à anonymiser"
 	for file in files:
 	    i+=1
 	    if i==lim:
-		  print i, "fichiers sont traités"
+		  print i, "fichiers traités"
 		  lim+=10
 	    outputFileName="anonymized/"+file
 	    outputFolder=outputFileName.split("/")
@@ -72,11 +66,10 @@ def anonymize(directory):
 	    fileIN.close()
 	    outputFile.close()
 	
-	#print anonymize_header(header_email)
->>>>>>> 21bf1ab4c082ba300fc0f453b82504126aabf456
+	print anonymize_header(header_email)
 
- 	
 
 
 if __name__ == '__main__':
 	anonymize('scott-s')
+	
