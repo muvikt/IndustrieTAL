@@ -29,7 +29,8 @@ def listSubDirs(rootd):
 	return subdirs
 
 
-def listFiles(subdirs):
+def listFiles(directory):
+  subdirs=listSubDirs(directory)
   files=[]
   for subd in subdirs:
     for file in os.listdir(subd):
@@ -38,16 +39,34 @@ def listFiles(subdirs):
   return files
 
 
-def main():
-	#print listSubDirs('scott-s')
-	contentFile = open("mail.txt",'r').read()
-	header_email,body_email = filter_email(contentFile)
-	anonymize_header(header_email)
-	anonymize_body(body_email)
-	print anonymize_header(header_email)
+def anonymize(directory):
+	files=listFiles(directory)
+	i=0
+	lim=10
+	print "Total:", len(files), u" fichiers sont à anonymiser"
+	for file in files:
+	    i+=1
+	    if i==lim:
+		  print i, "fichiers sont traités"
+		  lim+=10
+	    outputFileName="anonymized/"+file
+	    outputFolder=outputFileName.split("/")
+	    outputFolder="/".join(x for x in outputFolder[:-1])
+	    if not os.path.exists(outputFolder):
+    		os.makedirs(outputFolder)
+	    outputFile=open(outputFileName, "w")
+	    fileIN=open(file,'r')
+	    contentFile = fileIN.read()
+	    header_email,body_email = filter_email(contentFile)
+	    #anonymize_header(header_email)
+	    outputFile.write(anonymize_body(body_email))
+	    fileIN.close()
+	    outputFile.close()
+	
+	#print anonymize_header(header_email)
 
  	
 
 
 if __name__ == '__main__':
-	main()
+	anonymize('scott-s')
