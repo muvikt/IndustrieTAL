@@ -62,11 +62,12 @@ def anonymize(directory):
 	    contentFile = fileIN.read()
 	    header_email,body_email = filter_email(contentFile)
 	    #anonymize_header(header_email)
+	    outputFile.write(anonymize_header(header_email))
 	    outputFile.write(anonymize_body(body_email))
 	    fileIN.close()
 	    outputFile.close()
 	
-	print anonymize_header(header_email)
+	#print anonymize_header(header_email)
 
 
 
