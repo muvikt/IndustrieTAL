@@ -48,10 +48,13 @@ def anonymize(directory):
 	lim=10
 	print "Total:", len(files), u"fichiers à anonymiser"
 	for file in files:
+	  #pour afficher l'avancement 
 	    i+=1
 	    if i==lim:
 		  print i, "fichiers traités"
 		  lim+=10
+	  ####
+	    anonym=Anonymizer()
 	    outputFileName="anonymized/"+file
 	    outputFolder=outputFileName.split("/")
 	    outputFolder="/".join(x for x in outputFolder[:-1])
@@ -60,21 +63,24 @@ def anonymize(directory):
 	    outputFile=open(outputFileName, "w")
 	    fileIN=open(file,'r')
 	    contentFile = fileIN.read()
-	    header_email,body_email = filter_email(contentFile)
-	    #anonymize_header(header_email)
-	    outputFile.write(anonymize_header(header_email))
-	    outputFile.write(anonymize_body(body_email))
+	   
+	   header_email,body_email = anonym.filter_email(contentFile)
+	    
+	    #anonynimization and writing in file
+	    outputFile.write(anonym.anonymize_header(header_email))
+	    outputFile.write("\n"+anonym.anonymize_body(body_email))
 	    fileIN.close()
 	    outputFile.close()
 	
-	#print anonymize_header(header_email)
 
 
 
 if __name__ == '__main__':
-	#anonymize('scott-s')
-	contentFile = open("mail.txt",'r').read()
-	header_email,body_email = filter_email(contentFile)
-	print anonymize_header(header_email)
+	anonymize('scott-s')
+	#an=Anonymizer()
+	#contentFile = open("mail.txt",'r').read()
+	#header_email,body_email = an.filter_email(contentFile)
+	#an.anonymize_header(header_email)
+	#an.anonymize_body(body_email)
 	
 	
