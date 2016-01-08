@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
 
-#title           : 
+#title           : projet.py
 #description     : anonymize a sample of enron corpus 
 #authors         : anca boca, victoria musatova 
-#date            : 30/12/15
-#usage           : 
+#date            : 08/01/15
+#usage           : python projet.py
 #python_version  : 2.7
 
 #imports
@@ -71,5 +71,9 @@ def anonymize(directory):
 
 
 if __name__ == '__main__':
-	anonymize('scott-s')
+	#anonymize('scott-s')
+	contentFile = open("mail.txt",'r').read()
+	header_email,body_email = filter_email(contentFile)
+	print anonymize_header(header_email)
+	
 	
