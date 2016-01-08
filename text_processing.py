@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
 
-#title           : 
+#title           : text_processinng.py
 #description     : anonymize a sample of enron corpus 
 #authors         : anca boca, victoria musatova 
-#date            : 30/12/15
-#usage           : 
+#date            : 08/01/15
+#usage           : python text_processinng.py
 #python_version  : 2.7
 
 
@@ -61,31 +61,18 @@ def anonymize_header(email_header):
 	# transform the  str tuple into str
 	string = ""
 	for tpl in email_header:
-		string+= tpl[0]+" "+tpl[1]+"\n"
+		string+= tpl[0]+": "+tpl[1]+"\n"
 	all_adress_matches = re.findall(regex_mail_adress, string)
 
 	# fill mapping dict
 	adresses_map = fill_mapping(all_adress_matches)
+
+	#anonymization
+	for match in all_adress_matches:
+		string = string.replace(match, adresses_map[match])
+	return string
 	
-	# get anonymized text
-	anonymized_string = get_anonymized_mail(string, adresses_map) 
-
-	return anonymized_string
-
-# produce anonymized text
-def get_anonymized_mail(string, adresses_map):
-	""" (str,dict) --> str
-	"""
-	string_to_return = ""
-	new_line = ""
-	for line in string.split("\n"):
-		for address in adresses_map :
-			if address in line:
-				new_line = line.replace(address, adresses_map[address])
-				string_to_return += new_line +"\n"
-	return string_to_return
-
-
+	
 # fills the mapping dict address_to_anonymize : anomynized_address 		
 def fill_mapping(adresses_lst):
 	""" (lst of str) --> dict
@@ -101,6 +88,8 @@ def fill_mapping(adresses_lst):
 
 # anonymize the email body
 def anonymize_body(email_body):
+	""" 
+	"""
 	new=re.sub(r"[0-9]", "*", email_body) #anonymize numbers
 	#print "EMAIL \n", new	
 	#tokenized_body = 
@@ -116,22 +105,27 @@ def anonymize_body(email_body):
 
 # return dictionary of NE {NE:type_NE}
 def treeNLTK2Dic(nltkTree):
-  en2label={}
-  for el in nltkTree:
-    if isinstance (el, Tree):
-      en="".join(x+' ' for x, y in el).strip(" ")
-      en2label[en]=el.label()
-  return en2label
+	""" 
+	"""
+	en2label={}
+	for el in nltkTree:
+		if isinstance (el, Tree):
+			en="".join(x+' ' for x, y in el).strip(" ")
+			en2label[en]=el.label()
 
+  	return en2label
 
+#
 def anonymizeEN(dicEN):
-  en2anonym={}
-  i=1
-  for en in dicEN:
-    anon="_"+dicEN[en][:3]+str(i)
-    en2anonym[en]=anon
-    i+=1
-  return en2anonym
+	""" 
+	"""
+	en2anonym={}
+  	i=1
+  	for en in dicEN:
+  		anon="_"+dicEN[en][:3]+str(i)
+  		en2anonym[en]=anon
+  		i+=1
+  	return en2anonym
 
 
 #return a string without punctuation
